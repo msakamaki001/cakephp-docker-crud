@@ -1,9 +1,3 @@
-<?php
-/**
- * @var \App\View\AppView $this
- * @var \App\Model\Entity\User $user
- */
-?>
 <div class="row">
     <aside class="column">
         <div class="side-nav">
@@ -15,14 +9,19 @@
         <div class="users form content">
             <?= $this->Form->create($user) ?>
             <fieldset>
-                <legend><?= __('Add User') ?></legend>
+                <legend><?= __('ユーザー新規登録') ?></legend>
                 <?php
-                    echo $this->Form->control('name');
-                    echo $this->Form->control('update_id');
-                    echo $this->Form->control('deleted', ['empty' => true]);
+                    echo $this->Form->control('name', ['label' => '名前']);
+                    echo $this->Form->control('email', ['label' => 'メールアドレス']);
+                    echo $this->Form->control('password', ['label' => 'パスワード']);
+                    // type はテキスト入力でもプルダウンでもOK（プルダウンにすると打ち間違いが防げます！）
+                    echo $this->Form->control('type', [
+                        'label' => '権限（タイプ）',
+                        'options' => ['admin' => '管理者 (admin)', 'user' => '利用者 (user)']
+                    ]);
                 ?>
             </fieldset>
-            <?= $this->Form->button(__('Submit')) ?>
+            <?= $this->Form->button(__('登録する')) ?>
             <?= $this->Form->end() ?>
         </div>
     </div>

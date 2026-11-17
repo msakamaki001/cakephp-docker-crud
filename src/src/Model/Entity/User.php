@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Model\Entity;
 
+use Authentication\PasswordHasher\DefaultPasswordHasher; 
 use Cake\ORM\Entity;
 
 /**
@@ -10,10 +11,9 @@ use Cake\ORM\Entity;
  *
  * @property int $id
  * @property string $name
- * @property int|null $update_id
- * @property \Cake\I18n\DateTime|null $created
- * @property \Cake\I18n\DateTime|null $modified
- * @property \Cake\I18n\DateTime|null $deleted
+ * @property string $email
+ * @property string $password
+ * @property string $type
  */
 class User extends Entity
 {
@@ -28,9 +28,31 @@ class User extends Entity
      */
     protected array $_accessible = [
         'name' => true,
-        'update_id' => true,
-        'created' => true,
-        'modified' => true,
-        'deleted' => true,
+        'email' => true,
+        'password' => true,
+        'type' => true,
     ];
+
+    /**
+     * Fields that are excluded from JSON versions of the entity.
+     *
+     * @var array<string>
+     */
+    protected array $_hidden = [
+        'password',
+    ];
+
+    protected function _setPassword(string $password): ?string
+    {
+        if (strlen($password) > 0) {
+            return (new DefaultPasswordHasher())->hash($password);
+        }
+        return null;
+    }
+
+    // 管理者判定メソッドも一緒に書いておきます
+    public function isAdmin(): bool
+    {
+        return $this->type === 'admin';
+    }
 }

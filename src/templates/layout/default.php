@@ -36,11 +36,33 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
 <body>
     <nav class="top-nav">
         <div class="top-nav-title">
-            <a href="<?= $this->Url->build('/') ?>"><span>Cake</span>PHP</a>
+            <a href="<?= $this->Url->build('/') ?>">アプリ</a>
         </div>
         <div class="top-nav-links">
-            <a target="_blank" rel="noopener" href="https://book.cakephp.org/5/">Documentation</a>
-            <a target="_blank" rel="noopener" href="https://api.cakephp.org/">API</a>
+            <?php
+            $loginUser = $this->request->getAttribute('identity');
+            ?>
+
+            <?php if ($loginUser): ?>
+                <!-- ▼ ここは「ログイン中（$loginUser が null ではない時）」だけ動く！ ▼ -->
+                <span style="margin-right: 15px; font-weight: bold;">
+                    👤 <?= h($loginUser->get('name')) ?> さん
+                    <?php if ($loginUser->get('type') === 'admin'): ?>
+                        <span style="background: #d33c43; color: #fff; padding: 2px 6px; border-radius: 4px; font-size: 0.8em;">管理者</span>
+                    <?php endif; ?>
+                </span>
+
+                <?php if ($loginUser->get('type') === 'admin'): ?>
+                    <?= $this->Html->link('ユーザー一覧', ['controller' => 'Users', 'action' => 'index']) ?>
+                <?php endif; ?>
+
+                <?= $this->Html->link('ログアウト', ['controller' => 'Users', 'action' => 'logout']) ?>
+
+            <?php else: ?>
+                <!-- ▼ ログアウト後・未ログイン時はこっちだけが動く！ ▼ -->
+                <?= $this->Html->link('ログイン', ['controller' => 'Users', 'action' => 'login']) ?>
+                <?= $this->Html->link('新規登録', ['controller' => 'Users', 'action' => 'add']) ?>
+            <?php endif; ?>
         </div>
     </nav>
     <main class="main">
