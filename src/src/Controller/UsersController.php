@@ -32,13 +32,15 @@ class UsersController extends AppController
            // ログイン成功時のユーザーentityを取得
            $user = $this->Authentication->getIdentity()->getOriginalData(); 
            if ($user->role === 'admin') {
-               $redirect = $this->request->getQuery('redirect', [
-                   'controller' => 'Users',
+               // 管理者は点数マスタへ
+                $redirect = $this->request->getQuery('redirect', [
+                   'controller' => 'Points',
                    'action' => 'index',
                ]);
            } else {
+            // 医療事務スタッフは会計計算画面へ
                $redirect = $this->request->getQuery('redirect', [
-                   'controller' => 'Users',
+                   'controller' => 'Calcs',
                    'action' => 'view',
                    $user->id,
                ]);
@@ -71,6 +73,34 @@ class UsersController extends AppController
             $this->Flash->error(__('ユーザーの登録に失敗しました。'));
         }
         $this->set(compact('user'));
+    }
+
+    /** edit method */
+    public function edit($id = null)
+    {
+        $user = $this->Users->get($id);
+        if ($this->request->is(['patch', 'post', 'put'])) {
+            $user = $this->Users->patchEntity($user, $this->request->getData());
+            if ($this->Users->save($user)) {
+                $this->Flash->success(__('ユーザー情報を更新しました。'));
+                return $this->redirect(['action' => 'index']);
+            }
+            $this->Flash->error(__('ユーザー情報の更新に失敗しました。'));
+        }
+        $this->set(compact('user'));
+    }
+
+    /** delete method */
+    public function delete($id = null)
+    {
+        $this->request->allowMethod(['post', 'delete']);
+        $user = $this->Users->get($id);
+        if ($this->Users->delete($user)) {
+            $this->Flash->success(__('ユーザーを削除しました。'));
+        } else {
+            $this->Flash->error(__('ユーザーの削除に失敗しました。'));
+        }
+        return $this->redirect(['action' => 'index']);
     }
 
     /** view method */
